@@ -1,0 +1,108 @@
+@model List<HealthLog>
+@{
+    ViewData["Title"] = "Theo dõi Sức khỏe";
+    var today = ViewBag.TodayLog as HealthLog ?? new HealthLog();
+    var reminders = ViewBag.Reminders as List<HealthReminder> ?? new List<HealthReminder>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #BAE6FD 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">❤️ GLOW Health</div>
+        <h1>Chăm sóc thân - tâm - trí mỗi ngày 🌱</h1>
+        <p>Lắng nghe cơ thể, uống đủ nước và duy trì những thói quen vận động nhỏ để luôn tràn đầy năng lượng!</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Water Tracker Card (4 cols) -->
+    <div class="bento-card col-span-4" style="text-align: center;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-sky">💧</div>
+                <span>Máy theo dõi lượng nước</span>
+            </div>
+            <span class="glow-tag tag-sky">Mục tiêu 2000 ml</span>
+        </div>
+
+        <div style="font-size: 3.5rem; margin: 1rem 0;">🥤</div>
+        <div class="glow-stat-value" style="color: #0284C7; font-size: 2.2rem;">@today.WaterMl <span style="font-size: 1.1rem; color: var(--glow-text-muted);">/ 2000 ml</span></div>
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.5rem;">
+            <form asp-action="AddWater" method="post">
+                <input type="hidden" name="amountMl" value="250" />
+                <button type="submit" class="btn-glow btn-mint btn-sm">+ 250ml 💧</button>
+            </form>
+            <form asp-action="AddWater" method="post">
+                <input type="hidden" name="amountMl" value="500" />
+                <button type="submit" class="btn-glow btn-sky btn-sm" style="background: #BAE6FD; color: #0369A1;">+ 500ml 🧊</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Daily Health Checkin Form (8 cols) -->
+    <div class="bento-card col-span-8">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-pink">🛌</div>
+                <span>Cập nhật chỉ số sức khỏe hôm nay</span>
+            </div>
+            <span class="glow-tag tag-pink">@DateTime.Today.ToString("dd/MM/yyyy")</span>
+        </div>
+        <form asp-action="UpdateLog" method="post">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Giờ ngủ đêm qua (tiếng):</label>
+                    <input type="number" step="0.1" name="sleepHours" class="form-control" value="@today.SleepHours" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Chất lượng giấc ngủ:</label>
+                    <select name="sleepQuality" class="form-control">
+                        <option value="Rất sâu giấc, sảng khoái">Rất sâu giấc, sảng khoái 🌟</option>
+                        <option value="Tốt, thức dậy tỉnh táo">Tốt, thức dậy tỉnh táo 😊</option>
+                        <option value="Chập chờn, hơi mỏi">Chập chờn, hơi mỏi 🥱</option>
+                        <option value="Thiếu ngủ, mệt mỏi">Thiếu ngủ, mệt mỏi 😴</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Số bước chân:</label>
+                    <input type="number" name="stepsCount" class="form-control" value="@today.StepsCount" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phút vận động:</label>
+                    <input type="number" name="activeMinutes" class="form-control" value="@today.ActiveMinutes" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mức năng lượng cơ thể (1-10):</label>
+                <input type="range" name="energyLevel" min="1" max="10" value="@today.EnergyLevel" class="form-control" style="cursor: pointer;" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ghi chú sức khỏe:</label>
+                <input type="text" name="healthNotes" class="form-control" value="@today.HealthNotes" placeholder="VD: Hôm nay cảm thấy nhẹ nhõm, không bị đau đầu" />
+            </div>
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%;">Lưu chỉ số sức khỏe ✨</button>
+        </form>
+    </div>
+
+    <!-- Health Reminders List (12 cols) -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">🔔</div>
+                <span>Hệ thống nhắc nhở tự động</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+            @foreach (var r in reminders)
+            {
+                <div style="background: #F8FAFC; border-radius: 20px; padding: 1.25rem; border-left: 5px solid #10B981;">
+                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 0.35rem; color: #065F46;">@r.Title</div>
+                    <p style="font-size: 0.85rem; color: var(--glow-text-muted); margin-bottom: 0.5rem;">@r.Message</p>
+                    <span class="glow-tag tag-mint">Mỗi @r.IntervalMinutes phút</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>

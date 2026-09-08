@@ -1,0 +1,71 @@
+@model GLOW.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập GLOW";
+    Layout = "_Layout";
+    string? successMsg = TempData["SuccessMessage"] as string;
+    string? warningMsg = TempData["WarningMessage"] as string;
+}
+
+<div style="max-width: 480px; margin: 3rem auto;">
+    <div class="bento-card" style="background: #FFFFFF; padding: 2.5rem; border-radius: 28px; box-shadow: var(--glow-shadow-hover);">
+        
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="glow-logo-circle" style="width: 56px; height: 56px; font-size: 1.4rem; margin: 0 auto 0.75rem auto;">GL</div>
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: #1E293B;">Đăng nhập GLOW ✨</h1>
+            <p style="color: var(--glow-text-muted); font-size: 0.95rem; margin-top: 0.35rem;">Chào mừng bạn trở lại với không gian của mình!</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(successMsg))
+        {
+            <div style="background: #ECFDF5; border: 1px solid #A7F3D0; padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.85rem; color: #065F46;">
+                @successMsg
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(warningMsg))
+        {
+            <div style="background: #FFFBEB; border: 1px solid #FDE68A; padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.85rem; color: #92400E;">
+                @warningMsg
+            </div>
+        }
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background: #FFF1F2; border-left: 4px solid #F43F5E; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.875rem; color: #9F1239;">
+                <div asp-validation-summary="All"></div>
+            </div>
+        }
+
+        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label asp-for="EmailOrUsername" class="form-label">Email hoặc Tên đăng nhập:</label>
+                <input asp-for="EmailOrUsername" class="form-control" placeholder="baotran@gmail.com" required autofocus />
+                <span asp-validation-for="EmailOrUsername" style="font-size: 0.8rem; color: #E11D48;"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="form-label">Mật khẩu:</label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
+                <span asp-validation-for="Password" style="font-size: 0.8rem; color: #E11D48;"></span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.875rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input asp-for="RememberMe" type="checkbox" style="cursor: pointer;" />
+                    <span>Ghi nhớ đăng nhập</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%; padding: 0.85rem; font-size: 1.05rem;">
+                🌟 Đăng nhập
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--glow-text-muted);">
+            Chưa có tài khoản? <a asp-action="Register" style="color: #059669; font-weight: 700; text-decoration: none;">Đăng ký ngay →</a>
+        </div>
+    </div>
+</div>

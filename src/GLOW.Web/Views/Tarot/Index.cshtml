@@ -1,0 +1,98 @@
+@model List<TarotCard>
+@{
+    ViewData["Title"] = "GLOW Tarot — Tự suy ngẫm";
+    var readings = ViewBag.RecentReadings as List<TarotReading> ?? new List<TarotReading>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FAF5FF 0%, #312E81 100%); color: white;">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge" style="background: #4338CA; color: #FDE68A;">🔮 GLOW Tarot — Giải Trí & Tự Suy Ngẫm</div>
+        <h1 style="color: #FDE68A;">Chiếc gương phản chiếu nội tâm & Trực giác ✨</h1>
+        <p style="color: #E0E7FF;">Rút bài Tarot không phải để dự đoán tương lai tuyệt đối, mà là công cụ tuyệt vời để bạn lắng nghe trực giác, nhìn nhận vấn đề đa chiều và truyền cảm hứng hành động!</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Draw Form Card (12 cols) -->
+    <div class="bento-card col-span-12" style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); color: white;">
+        <div class="bento-header">
+            <div class="bento-title" style="color: #FDE68A;">
+                <span style="font-size: 1.5rem;">🃏</span>
+                <span>Rút một trải bài mới</span>
+            </div>
+        </div>
+        <form asp-action="Draw" method="post" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+            <div style="flex: 1; min-width: 240px;">
+                <label class="form-label" style="color: #E0E7FF;">Chủ đề bạn đang suy ngẫm:</label>
+                <select name="questionTopic" class="form-control" style="background: #312E81; color: white; border-color: #4338CA;">
+                    <option value="Tổng quan">Tổng quan cuộc sống & Cảm hứng ✨</option>
+                    <option value="Học tập">Học tập & Định hướng phát triển 📚</option>
+                    <option value="Công việc">Công việc & Mục tiêu sự nghiệp 💼</option>
+                    <option value="Tình cảm">Tình cảm & Các mối quan hệ ❤️</option>
+                    <option value="Yes/No">Câu hỏi Yes / No dứt khoát ❓</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label class="form-label" style="color: #E0E7FF;">Kiểu trải bài:</label>
+                <select name="spreadType" class="form-control" style="background: #312E81; color: white; border-color: #4338CA;">
+                    <option value="3 Cards" selected>3 Lá (Quá khứ - Hiện tại - Tương lai / Lời khuyên) 🃏🃏🃏</option>
+                    <option value="1 Card">1 Lá (Thông điệp ngày hôm nay) 🃏</option>
+                    <option value="Yes/No">1 Lá (Yes / No) ❓</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-glow btn-yellow" style="padding: 0.75rem 2rem; font-size: 1.05rem;">🔮 Rút Bài Ngay</button>
+        </form>
+    </div>
+
+    <!-- Latest AI Interpretation (12 cols) -->
+    @if (readings.Any())
+    {
+        var latest = readings.First();
+        <div class="bento-card col-span-12" style="background: #FFFFFF; border: 2px solid #E9D5FF;">
+            <div class="bento-header">
+                <div class="bento-title">
+                    <div class="bento-icon icon-lavender">✨</div>
+                    <span>Lời giải bài Tarot gần nhất — Chủ đề: @latest.QuestionTopic (@latest.ReadingDate.ToString("dd/MM/yyyy HH:mm"))</span>
+                </div>
+                <span class="glow-tag tag-lavender">@latest.SpreadType</span>
+            </div>
+            <div style="font-size: 1rem; line-height: 1.8; color: #1E293B; white-space: pre-line; background: #FAF5FF; padding: 1.5rem; border-radius: 16px;">
+                @latest.AiInterpretation
+            </div>
+        </div>
+    }
+
+    <!-- 3D Interactive Cards Gallery (12 cols) -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">🎴</div>
+                <span>Bộ bài Tarot GLOW (Bấm vào thẻ bài để lật 3D)</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+            @foreach (var card in Model)
+            {
+                <div class="tarot-scene">
+                    <div class="tarot-card">
+                        <!-- Mặt sau (Back) -->
+                        <div class="tarot-face tarot-back">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌙 ✨</div>
+                            <div style="font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;">GLOW TAROT</div>
+                            <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.5rem;">Bấm để xem mặt trước 👆</div>
+                        </div>
+                        <!-- Mặt trước (Front) -->
+                        <div class="tarot-face tarot-front">
+                            <div style="height: 140px; width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 0.75rem;">
+                                <img src="@card.ImageUrl" alt="@card.NameVi" style="width: 100%; height: 100%; object-fit: cover;" />
+                            </div>
+                            <h4 style="font-size: 1rem; font-weight: 800; color: #4C1D95; text-align: center; margin-bottom: 0.25rem;">@card.NameVi</h4>
+                            <span class="glow-tag tag-yellow" style="margin-bottom: 0.5rem;">Nguyên tố: @card.Element</span>
+                            <p style="font-size: 0.75rem; color: #475569; text-align: center; line-height: 1.4;">@card.Keywords</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

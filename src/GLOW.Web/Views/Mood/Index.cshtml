@@ -1,0 +1,140 @@
+@model List<MoodEntry>
+@{
+    ViewData["Title"] = "Theo dõi Cảm xúc";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FAF5FF 0%, #E9D5FF 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">😊 GLOW Mood</div>
+        <h1>Khám phá thế giới nội tâm & Cảm xúc của bạn 🌟</h1>
+        <p>Mỗi cảm xúc đều đáng được trân trọng. Điểm cảm xúc trung bình: <strong>@ViewBag.AverageMood / 10</strong>.</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Mood Tracker Form (6 cols) -->
+    <div class="bento-card col-span-6">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-lavender">✨</div>
+                <span>Ghi nhận tâm trạng hôm nay</span>
+            </div>
+        </div>
+        <form asp-action="LogMood" method="post">
+            <div class="form-group">
+                <label class="form-label">Chọn Emoji cảm xúc:</label>
+                <div style="display: flex; gap: 0.75rem; justify-content: space-between; font-size: 2rem; cursor: pointer; padding: 0.5rem 0;" id="emoji-picker">
+                    <span onclick="selectEmoji('🥳', 'Siêu hào hứng', 10)">🥳</span>
+                    <span onclick="selectEmoji('🥰', 'Hạnh phúc & Yêu đời', 9)">🥰</span>
+                    <span onclick="selectEmoji('😊', 'Vui vẻ & Bình yên', 8)">😊</span>
+                    <span onclick="selectEmoji('☕', 'Bình thường', 7)">☕</span>
+                    <span onclick="selectEmoji('🥱', 'Hơi mệt mỏi', 5)">🥱</span>
+                    <span onclick="selectEmoji('🌧️', 'Buồn bã & Trầm lắng', 4)">🌧️</span>
+                </div>
+            </div>
+
+            <input type="hidden" name="moodEmoji" id="input-emoji" value="🥰" />
+            <input type="hidden" name="moodLabel" id="input-label" value="Hạnh phúc & Yêu đời" />
+            <input type="hidden" name="moodScore" id="input-score" value="9" />
+
+            <div style="background: #FAF5FF; padding: 0.75rem; border-radius: 12px; margin-bottom: 1rem; text-align: center; font-weight: 700; color: #7E22CE;" id="selected-preview">
+                🥰 Hạnh phúc & Yêu đời (9/10)
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mức năng lượng (1 - 10):</label>
+                <input type="range" name="energyScore" min="1" max="10" value="8" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Điều gì khiến bạn vui hôm nay?</label>
+                <input type="text" name="joyTriggers" class="form-control" placeholder="VD: Gặp bạn thân, uống matcha..." />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ghi chú thêm:</label>
+                <input type="text" name="note" class="form-control" placeholder="Tâm sự đôi dòng..." />
+            </div>
+
+            <button type="submit" class="btn-glow btn-lavender" style="width: 100%;">Lưu cảm xúc ✨</button>
+        </form>
+    </div>
+
+    <!-- Mood Trend Chart (6 cols) -->
+    <div class="bento-card col-span-6">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-mint">📈</div>
+                <span>Biểu đồ biến thiên tâm trạng</span>
+            </div>
+            <span class="glow-tag tag-mint">7 Ngày qua</span>
+        </div>
+        <div style="height: 280px; position: relative;">
+            <canvas id="moodChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Mood History List (12 cols) -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">📅</div>
+                <span>Nhật ký cảm xúc theo ngày</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            @foreach (var m in Model)
+            {
+                <div style="background: #F8FAFC; border-radius: 16px; padding: 1.25rem; border: 1px solid var(--glow-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 1.8rem;">@m.MoodEmoji</span>
+                        <span style="font-size: 0.8rem; color: var(--glow-text-muted);">@m.Date.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <h4 style="font-weight: 800; color: #6B21A8; margin-bottom: 0.35rem;">@m.MoodLabel (@m.MoodScore/10)</h4>
+                    <p style="font-size: 0.85rem; color: #1F2937; margin-bottom: 0.5rem;">@m.Note</p>
+                    <div style="background: white; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; color: #065F46;">
+                        🤖 <strong>AI:</strong> @m.AiAnalysis
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectEmoji(emoji, label, score) {
+            document.getElementById('input-emoji').value = emoji;
+            document.getElementById('input-label').value = label;
+            document.getElementById('input-score').value = score;
+            document.getElementById('selected-preview').textContent = `${emoji} ${label} (${score}/10)`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{
+                        label: 'Chỉ số Mood',
+                        data: [7, 8, 6, 9, 8, 9, 8],
+                        borderColor: '#A855F7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#A855F7',
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 1, max: 10 }
+                    }
+                }
+            });
+        });
+    </script>
+}

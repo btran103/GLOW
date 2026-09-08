@@ -1,0 +1,87 @@
+@model TomorrowPlan
+@{
+    ViewData["Title"] = "GLOW Tomorrow — Gợi ý ngày mai";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FEF3C7 0%, #D9F99D 50%, #A7F3D0 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">🌅 GLOW Tomorrow</div>
+        <h1>Khởi đầu ngày mới với năng lượng đỉnh cao ✨</h1>
+        <p>Cuối ngày, AI chuẩn bị kế hoạch nhẹ nhàng cho ngày tiếp theo để bạn thức dậy với tâm thế chủ động, tự tin và tràn đầy cảm hứng!</p>
+    </div>
+    <form asp-action="Regenerate" method="post" style="margin: 0;">
+        <button type="submit" class="btn-glow btn-yellow">🔄 Làm mới kế hoạch ngày mai</button>
+    </form>
+</div>
+
+<div class="bento-grid">
+    <!-- Positive Affirmation Card (12 cols) -->
+    <div class="bento-card col-span-12" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); text-align: center; border: 2px dashed #F59E0B;">
+        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">💌 ✨</div>
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: #92400E; margin-bottom: 0.5rem;">Lời nhắn tích cực cho ngày @Model.PlanForDate.ToString("dd/MM/yyyy")</h2>
+        <p style="font-size: 1.1rem; color: #78350F; max-width: 750px; margin: 0 auto; font-style: italic;">"@Model.PositiveMessage"</p>
+    </div>
+
+    <!-- 1. Việc học & Công việc ưu tiên (6 cols) -->
+    <div class="bento-card col-span-6" style="background: #FFFFFF;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-mint">📚</div>
+                <span>Nhiệm vụ trọng tâm cần ưu tiên</span>
+            </div>
+            <span class="glow-tag tag-mint">Top Priority</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: #F0FDF4; padding: 1rem; border-radius: 16px; border-left: 4px solid #10B981;">
+                <div style="font-weight: 800; color: #065F46; font-size: 0.95rem; margin-bottom: 0.25rem;">📖 Học tập:</div>
+                <div style="font-size: 0.9rem; color: #1E293B;">@Model.PriorityStudy</div>
+            </div>
+            <div style="background: #FFFBEB; padding: 1rem; border-radius: 16px; border-left: 4px solid #F59E0B;">
+                <div style="font-weight: 800; color: #92400E; font-size: 0.95rem; margin-bottom: 0.25rem;">💼 Công việc:</div>
+                <div style="font-size: 0.9rem; color: #1E293B;">@Model.PriorityWork</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Gợi ý Outfit & Màu sắc may mắn (6 cols) -->
+    <div class="bento-card col-span-6" style="background: #FFFFFF;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-pink">👗</div>
+                <span>Outfit gợi ý & Màu sắc phong thủy</span>
+            </div>
+            <span class="glow-tag tag-pink">Style Gen Z</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: #FDF2F8; padding: 1rem; border-radius: 16px; border-left: 4px solid #EC4899;">
+                <div style="font-weight: 800; color: #831843; font-size: 0.95rem; margin-bottom: 0.25rem;">🎨 Tone màu may mắn:</div>
+                <div style="font-size: 0.9rem; color: #1E293B; font-weight: 700;">@Model.OutfitLuckyColor</div>
+            </div>
+            <div style="background: #FAF5FF; padding: 1rem; border-radius: 16px; border-left: 4px solid #A855F7;">
+                <div style="font-weight: 800; color: #581C87; font-size: 0.95rem; margin-bottom: 0.25rem;">✨ Set đồ gợi ý:</div>
+                <div style="font-size: 0.9rem; color: #1E293B;">@Model.SuggestedOutfit</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Thực đơn & Thói quen chăm sóc bản thân (12 cols) -->
+    <div class="bento-card col-span-12" style="background: #FFFFFF;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-sky">🥗</div>
+                <span>Thực đơn dinh dưỡng & Nhắc nhở chăm sóc sức khỏe</span>
+            </div>
+            <span class="glow-tag tag-sky">Self-Care</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="background: #F8FAFC; padding: 1rem; border-radius: 16px;">
+                <div style="font-weight: 800; color: #0284C7; font-size: 0.95rem; margin-bottom: 0.25rem;">🍎 Gợi ý ăn uống cân bằng:</div>
+                <div style="font-size: 0.9rem; color: #334155; line-height: 1.6;">@Model.NutritionSuggestion</div>
+            </div>
+            <div style="background: #F8FAFC; padding: 1rem; border-radius: 16px;">
+                <div style="font-weight: 800; color: #059669; font-size: 0.95rem; margin-bottom: 0.25rem;">💧 Thói quen lành mạnh:</div>
+                <div style="font-size: 0.9rem; color: #334155; line-height: 1.6;">@Model.SelfCareReminders</div>
+            </div>
+        </div>
+    </div>
+</div>

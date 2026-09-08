@@ -1,0 +1,140 @@
+@model List<WorkTask>
+@{
+    ViewData["Title"] = "Quản lý Công việc";
+    var todo = ViewBag.TodoTasks as List<WorkTask> ?? new List<WorkTask>();
+    var inProgress = ViewBag.InProgressTasks as List<WorkTask> ?? new List<WorkTask>();
+    var done = ViewBag.DoneTasks as List<WorkTask> ?? new List<WorkTask>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">💼 GLOW Work</div>
+        <h1>Không gian làm việc & Hiệu suất cao 🔥</h1>
+        <p>Tổng thời gian làm việc đã ghi nhận: <strong>@ViewBag.TotalHoursLogged giờ</strong>. Quản lý công việc thông minh theo phong cách Gen Z!</p>
+    </div>
+    <button class="btn-glow btn-yellow" onclick="document.getElementById('add-work-modal').style.display = 'block';">+ Thêm công việc</button>
+</div>
+
+<!-- Modal Thêm Công Việc -->
+<div id="add-work-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 500px; margin: 5rem auto; padding: 2rem; border-radius: 24px; box-shadow: var(--glow-shadow-hover);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Thêm Công việc mới 💼</h2>
+            <button onclick="document.getElementById('add-work-modal').style.display = 'none';" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <form asp-action="AddTask" method="post">
+            <div class="form-group">
+                <label class="form-label">Tên công việc:</label>
+                <input type="text" name="title" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tên dự án:</label>
+                <input type="text" name="projectName" class="form-control" placeholder="VD: GLOW App" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Mô tả chi tiết:</label>
+                <textarea name="description" class="form-control" style="min-height: 80px;"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Deadline:</label>
+                    <input type="date" name="dueDate" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Độ ưu tiên:</label>
+                    <select name="priority" class="form-control">
+                        <option value="Urgent">Khẩn cấp 🔥</option>
+                        <option value="High" selected>Cao 🔴</option>
+                        <option value="Medium">Trung bình 🟡</option>
+                        <option value="Low">Thấp 🟢</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%;">Lưu công việc ✨</button>
+        </form>
+    </div>
+</div>
+
+<!-- Kanban Board 3 Cột -->
+<div class="bento-grid">
+    <!-- Cột 1: Cần làm (Todo) -->
+    <div class="bento-card col-span-4" style="background: #F8FAFC;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <span class="bento-icon icon-yellow">📋</span>
+                <span>Cần làm (Todo)</span>
+            </div>
+            <span class="glow-tag tag-yellow">@todo.Count</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            @foreach (var t in todo)
+            {
+                <div style="background: white; padding: 1rem; border-radius: 16px; border: 1px solid var(--glow-border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span class="glow-tag tag-yellow">@t.Priority</span>
+                        <span style="font-size: 0.75rem; color: var(--glow-text-muted);">@t.ProjectName</span>
+                    </div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem;">@t.Title</h4>
+                    <p style="font-size: 0.8rem; color: var(--glow-text-muted); margin-bottom: 0.75rem;">@t.Description</p>
+                    <form asp-action="UpdateStatus" method="post" style="display: flex; justify-content: flex-end;">
+                        <input type="hidden" name="id" value="@t.Id" />
+                        <input type="hidden" name="status" value="In Progress" />
+                        <button type="submit" class="btn-glow btn-outline btn-sm">Bắt đầu làm →</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Cột 2: Đang thực hiện (In Progress) -->
+    <div class="bento-card col-span-4" style="background: #F0FDF4;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <span class="bento-icon icon-mint">⚡</span>
+                <span>Đang làm (In Progress)</span>
+            </div>
+            <span class="glow-tag tag-mint">@inProgress.Count</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            @foreach (var t in inProgress)
+            {
+                <div style="background: white; padding: 1rem; border-radius: 16px; border: 1px solid #BBF7D0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span class="glow-tag tag-mint">Đang chạy</span>
+                        <span style="font-size: 0.75rem; color: var(--glow-text-muted);">@t.ProjectName</span>
+                    </div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem;">@t.Title</h4>
+                    <p style="font-size: 0.8rem; color: var(--glow-text-muted); margin-bottom: 0.75rem;">@t.Description</p>
+                    <form asp-action="UpdateStatus" method="post" style="display: flex; justify-content: flex-end;">
+                        <input type="hidden" name="id" value="@t.Id" />
+                        <input type="hidden" name="status" value="Done" />
+                        <button type="submit" class="btn-glow btn-mint btn-sm">Hoàn thành ✅</button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Cột 3: Đã hoàn thành (Done) -->
+    <div class="bento-card col-span-4" style="background: #FAF5FF;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <span class="bento-icon icon-lavender">🎉</span>
+                <span>Đã xong (Done)</span>
+            </div>
+            <span class="glow-tag tag-lavender">@done.Count</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            @foreach (var t in done)
+            {
+                <div style="background: white; padding: 1rem; border-radius: 16px; border: 1px solid #E9D5FF; opacity: 0.85;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <span class="glow-tag tag-lavender">Hoàn thành</span>
+                        <span style="font-size: 0.75rem; color: var(--glow-text-muted);">@t.ProjectName</span>
+                    </div>
+                    <h4 style="font-size: 0.95rem; font-weight: 700; text-decoration: line-through;">@t.Title</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>

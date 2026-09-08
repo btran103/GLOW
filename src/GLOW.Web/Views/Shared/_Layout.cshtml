@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — GLOW | Thấu hiểu & Tỏa sáng mỗi ngày</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Leaflet Map CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="~/css/glow.css" />
+</head>
+<body>
+    <header class="glow-navbar">
+        <div class="glow-navbar-container">
+            <a asp-controller="Home" asp-action="Index" class="glow-brand">
+                <div class="glow-logo-circle">GL</div>
+                <span>GLOW</span>
+            </a>
+
+            <ul class="glow-nav-links">
+                <li><a asp-controller="Home" asp-action="Index" class="glow-nav-link">🏠 Trang chủ</a></li>
+                <li><a asp-controller="Study" asp-action="Index" class="glow-nav-link">📚 Học tập</a></li>
+                <li><a asp-controller="Work" asp-action="Index" class="glow-nav-link">💼 Công việc</a></li>
+                <li><a asp-controller="Money" asp-action="Index" class="glow-nav-link">💰 Chi tiêu</a></li>
+                <li><a asp-controller="Health" asp-action="Index" class="glow-nav-link">❤️ Sức khỏe</a></li>
+                <li><a asp-controller="Nutrition" asp-action="Index" class="glow-nav-link">🍎 Ăn uống</a></li>
+                <li><a asp-controller="Mood" asp-action="Index" class="glow-nav-link">😊 Cảm xúc</a></li>
+                <li><a asp-controller="Moments" asp-action="Index" class="glow-nav-link">📸 Kỷ niệm</a></li>
+                <li><a asp-controller="Map" asp-action="Index" class="glow-nav-link">📍 Bản đồ</a></li>
+                <li><a asp-controller="Diary" asp-action="Index" class="glow-nav-link" style="background: var(--glow-yellow-light); color: #B45309;">📖 Nhật ký AI</a></li>
+                <li><a asp-controller="AiChat" asp-action="Index" class="glow-nav-link" style="background: var(--glow-mint-light); color: #065F46;">🤖 GLOW AI</a></li>
+                <li><a asp-controller="Style" asp-action="Index" class="glow-nav-link">👗 Thời trang</a></li>
+                <li><a asp-controller="Tarot" asp-action="Index" class="glow-nav-link">🔮 Tarot</a></li>
+                <li><a asp-controller="Tomorrow" asp-action="Index" class="glow-nav-link">🌅 Ngày mai</a></li>
+                <li><a asp-controller="Insight" asp-action="Index" class="glow-nav-link">🧠 Hiểu mình</a></li>
+                <li><a asp-controller="Growth" asp-action="Index" class="glow-nav-link">🌱 Phát triển</a></li>
+                <li><a asp-controller="Family" asp-action="Index" class="glow-nav-link">👨‍👩‍👧 Gia đình</a></li>
+                <li><a asp-controller="Capsule" asp-action="Index" class="glow-nav-link">⏳ Capsule</a></li>
+            </ul>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="Auth" asp-action="Profile" class="glow-user-pill">
+                        <img src="@(User.FindFirst("AvatarUrl")?.Value ?? "/uploads/avatars/default.png")" alt="Avatar" class="glow-avatar-sm" />
+                        <span>@(User.Identity.Name ?? "Bảo Trân") ✨</span>
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-glow btn-outline btn-sm" title="Đăng xuất">🚪</button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn-glow btn-outline btn-sm">Đăng nhập</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn-glow btn-mint btn-sm">Đăng ký ✨</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    <main class="glow-main">
+        @RenderBody()
+    </main>
+
+    <footer class="glow-footer">
+        <div class="glow-footer-brand">🌈 GLOW — Personal Life Management & Reflection</div>
+        <p>“Người bạn số giúp bạn ghi lại cuộc sống, hiểu chính mình và nhìn thấy hành trình trưởng thành qua từng ngày.”</p>
+    </footer>
+
+    <script src="~/js/glow.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

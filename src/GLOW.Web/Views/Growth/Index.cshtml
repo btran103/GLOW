@@ -1,0 +1,90 @@
+@model GLOW.Services.InsightReport
+@{
+    ViewData["Title"] = "GLOW Growth — Hành trình phát triển";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #FEF3C7 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">🌱 GLOW Growth — Hành Trình Trưởng Thành</div>
+        <h1>Nhìn lại quá trình & Tự hào về sự nỗ lực của chính mình 🏆</h1>
+        <p>Theo dõi sự thay đổi qua 7 ngày, 30 ngày, 3 tháng và 6 tháng để thấy bạn đã tiến bộ vượt bậc thế nào!</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Habit Streak Banner (12 cols) -->
+    <div class="bento-card col-span-12" style="background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <span class="glow-tag" style="background: rgba(255,255,255,0.2); color: white;">🔥 Chuỗi thói quen (Streak)</span>
+                <h2 style="font-size: 2rem; font-weight: 900; margin-top: 0.5rem;">@Model.HabitStreakDays NGÀY TÍCH CỰC LIÊN TỤC! 🌟</h2>
+                <p style="opacity: 0.9; font-size: 0.95rem;">Bạn đang duy trì thói quen học tập, chăm sóc sức khỏe và ghi nhận cảm xúc vô cùng đều đặn!</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 900;">@ViewBag.StudyHoursTotal h</div>
+                    <div style="font-size: 0.75rem; opacity: 0.85;">Giờ học tích lũy</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 900;">@ViewBag.MomentsCount</div>
+                    <div style="font-size: 0.75rem; opacity: 0.85;">Kỷ niệm lưu giữ</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: 900;">@ViewBag.DiaryCount</div>
+                    <div style="font-size: 0.75rem; opacity: 0.85;">Trang nhật ký AI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Growth Progress Timeline (4 milestones) -->
+    @foreach (var g in Model.GrowthTrend)
+    {
+        <div class="bento-card col-span-3" style="background: white; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌱</div>
+            <span class="glow-tag tag-mint">@g.Period</span>
+            <div class="glow-stat-value" style="color: #059669; font-size: 2rem; margin: 0.5rem 0;">@g.Score <span style="font-size: 1rem; color: var(--glow-text-muted);">/10</span></div>
+            <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">@g.Comment</p>
+        </div>
+    }
+
+    <!-- Badges & Achievements (12 cols) -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">🏅</div>
+                <span>Huy hiệu thành tựu đã đạt được</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <div style="background: #FEF3C7; padding: 1rem; border-radius: 16px; display: flex; align-items: center; gap: 0.75rem;">
+                <div style="font-size: 2.2rem;">🚀</div>
+                <div>
+                    <div style="font-weight: 800; color: #92400E;">Khởi đầu rực rỡ</div>
+                    <div style="font-size: 0.8rem; color: #78350F;">Tạo đầy đủ 20 module GLOW</div>
+                </div>
+            </div>
+            <div style="background: #ECFDF5; padding: 1rem; border-radius: 16px; display: flex; align-items: center; gap: 0.75rem;">
+                <div style="font-size: 2.2rem;">💧</div>
+                <div>
+                    <div style="font-weight: 800; color: #065F46;">Cấp ẩm hoàn hảo</div>
+                    <div style="font-size: 0.8rem; color: #047857;">Uống đủ 2L nước mỗi ngày</div>
+                </div>
+            </div>
+            <div style="background: #FAF5FF; padding: 1rem; border-radius: 16px; display: flex; align-items: center; gap: 0.75rem;">
+                <div style="font-size: 2.2rem;">📚</div>
+                <div>
+                    <div style="font-weight: 800; color: #6B21A8;">Bậc thầy Pomodoro</div>
+                    <div style="font-size: 0.8rem; color: #581C87;">Tập trung học trên 10 giờ/tuần</div>
+                </div>
+            </div>
+            <div style="background: #FDF2F8; padding: 1rem; border-radius: 16px; display: flex; align-items: center; gap: 0.75rem;">
+                <div style="font-size: 2.2rem;">✨</div>
+                <div>
+                    <div style="font-weight: 800; color: #9D174D;">Tâm hồn tích cực</div>
+                    <div style="font-size: 0.8rem; color: #831843;">Duy trì Mood 8+ suốt 7 ngày</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

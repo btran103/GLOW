@@ -1,0 +1,69 @@
+@model VerifyEmailViewModel
+@{
+    ViewData["Title"] = "Xác thực Email";
+    var demoCode = TempData["DemoCode"] as string;
+    var successMsg = TempData["SuccessMessage"] as string;
+    var warningMsg = TempData["WarningMessage"] as string;
+}
+
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ECFDF5 0%, #FAF5FF 50%, #FEF3C7 100%); padding: 2rem;">
+    <div style="background: white; padding: 2.5rem; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); width: 100%; max-width: 480px; border: 1px solid #E2E8F0;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <div style="display: inline-block; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #10B981, #F59E0B); color: white; font-size: 28px; line-height: 60px;">📧</div>
+            <h2 style="color: #1E293B; margin-top: 0.75rem; font-weight: 800;">Xác thực Email của bạn</h2>
+            <p style="color: #64748B; font-size: 0.9rem;">Mã OTP 6 số đã được gửi tới <strong style="color: #10B981;">@Model.Email</strong></p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(successMsg))
+        {
+            <div style="background: #ECFDF5; border: 1px solid #A7F3D0; padding: 0.75rem 1rem; border-radius: 12px; color: #065F46; font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">✅ @successMsg</div>
+        }
+        @if (!string.IsNullOrEmpty(warningMsg))
+        {
+            <div style="background: #FEF3C7; border: 1px solid #FDE68A; padding: 0.75rem 1rem; border-radius: 12px; color: #92400E; font-size: 0.85rem; margin-bottom: 1rem; text-align: center;">⚠️ @warningMsg</div>
+        }
+
+        @if (!string.IsNullOrEmpty(demoCode))
+        {
+            <div style="background: linear-gradient(135deg, #EDE9FE, #FEF3C7); border: 2px dashed #A78BFA; padding: 1rem; border-radius: 16px; text-align: center; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.75rem; color: #7C3AED; font-weight: 600; margin-bottom: 0.5rem;">⚙️ CHẾ ĐỘ TEST — SMTP chưa cấu hình</div>
+                <div style="font-size: 0.75rem; color: #6D28D9; margin-bottom: 0.5rem;">Mã OTP hiển thị ở đây vì chưa cấu hình email SMTP</div>
+                <div style="font-size: 2rem; font-weight: 900; letter-spacing: 8px; color: #5B21B6;">@demoCode</div>
+            </div>
+        }
+        else
+        {
+            <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.85rem; color: #166534; text-align: center;">
+                    📬 <strong>Kiểm tra hộp thư email</strong> của bạn (bao gồm cả mục <strong>Spam/Junk</strong>)
+                </div>
+            </div>
+        }
+
+        <form asp-action="VerifyEmail" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Email" />
+
+            <div asp-validation-summary="All" style="color: #DC2626; font-size: 0.8rem; margin-bottom: 1rem;"></div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label asp-for="Code" style="display: block; font-weight: 700; color: #1E293B; margin-bottom: 0.5rem; font-size: 0.9rem;">Nhập mã OTP 6 số:</label>
+                <input asp-for="Code" class="form-control" maxlength="6" placeholder="000000" 
+                       style="text-align: center; font-size: 1.8rem; font-weight: 900; letter-spacing: 10px; padding: 0.75rem; border-radius: 16px; border: 2px solid #E2E8F0; width: 100%; box-sizing: border-box; transition: border-color 0.3s;"
+                       onfocus="this.style.borderColor='#10B981'" onblur="this.style.borderColor='#E2E8F0'" />
+                <span asp-validation-for="Code" style="color: #DC2626; font-size: 0.8rem;"></span>
+            </div>
+
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%; padding: 0.85rem; font-size: 1rem; font-weight: 700; border-radius: 16px;">Xác nhận tài khoản ✅</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #E2E8F0;">
+            <p style="color: #94A3B8; font-size: 0.8rem; margin-bottom: 0.75rem;">Chưa nhận được mã?</p>
+            <form asp-action="ResendCode" method="post" style="display: inline;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="email" value="@Model.Email" />
+                <button type="submit" style="background: none; border: none; color: #7C3AED; font-weight: 700; cursor: pointer; font-size: 0.9rem; text-decoration: underline;">📩 Gửi lại mã xác nhận</button>
+            </form>
+        </div>
+    </div>
+</div>

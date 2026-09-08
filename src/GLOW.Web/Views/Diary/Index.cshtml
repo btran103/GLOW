@@ -1,0 +1,112 @@
+@model DiaryRecord
+@{
+    ViewData["Title"] = "Nhật ký AI — Hôm nay của bạn";
+    DateTime selectedDate = (DateTime)ViewBag.SelectedDate;
+    var history = ViewBag.History as List<DiaryRecord> ?? new List<DiaryRecord>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #ECFDF5 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">📖 GLOW Diary — Linh Hồn Của GLOW</div>
+        <h1>Nhật ký tổng hợp AI: "Hôm nay của bạn" 🌅</h1>
+        <p>AI kết nối toàn bộ hoạt động trong ngày: Học tập + Công việc + Chi tiêu + Sức khỏe + Ăn uống + Mood + Kỷ niệm + Địa điểm để vẽ nên bức tranh trọn vẹn về ngày sống của bạn!</p>
+    </div>
+    <form asp-action="GenerateAiDiary" method="post" style="margin: 0;">
+        <input type="hidden" name="date" value="@selectedDate.ToString("yyyy-MM-dd")" />
+        <button type="submit" class="btn-glow btn-yellow">✨ AI Tạo / Làm mới Nhật Ký</button>
+    </form>
+</div>
+
+<div class="bento-grid">
+    <!-- Main Diary Book (8 cols) -->
+    <div class="bento-card col-span-8" style="background: #FFFFFF;">
+        @if (Model != null)
+        {
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--glow-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <span class="glow-tag tag-yellow">@Model.Date.ToString("dddd, dd/MM/yyyy", new System.Globalization.CultureInfo("vi-VN"))</span>
+                    <h2 style="font-size: 1.45rem; font-weight: 800; color: #1E293B; margin-top: 0.4rem;">@Model.Title</h2>
+                </div>
+                <div style="font-size: 2.5rem;">@Model.MoodEmoji</div>
+            </div>
+
+            <div style="background: #FEF9C3; border-left: 4px solid #EAB308; padding: 1rem 1.25rem; border-radius: 12px; font-size: 0.95rem; color: #713F12; margin-bottom: 1.5rem; line-height: 1.6;">
+                🌟 <strong>Bức tranh tổng quan:</strong> @Model.Summary
+            </div>
+
+            <!-- 6 Golden Reflection Sections -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                
+                <!-- 1. ✨ Điều tốt hôm nay -->
+                <div style="background: #ECFDF5; border-radius: 16px; padding: 1.25rem; border: 1px solid #A7F3D0;">
+                    <h4 style="font-weight: 800; color: #065F46; font-size: 0.95rem; margin-bottom: 0.5rem;">✨ Điều tốt hôm nay</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.GoodThings</div>
+                </div>
+
+                <!-- 2. 🌧 Điều chưa tốt -->
+                <div style="background: #FFF1F2; border-radius: 16px; padding: 1.25rem; border: 1px solid #FECDD3;">
+                    <h4 style="font-weight: 800; color: #9F1239; font-size: 0.95rem; margin-bottom: 0.5rem;">🌧 Điều chưa tốt</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.NotGoodThings</div>
+                </div>
+
+                <!-- 3. 🧠 Bài học hôm nay -->
+                <div style="background: #FAF5FF; border-radius: 16px; padding: 1.25rem; border: 1px solid #E9D5FF;">
+                    <h4 style="font-weight: 800; color: #6B21A8; font-size: 0.95rem; margin-bottom: 0.5rem;">🧠 Bài học hôm nay</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.LessonsLearned</div>
+                </div>
+
+                <!-- 4. 💭 Điều đáng nhớ -->
+                <div style="background: #F0F9FF; border-radius: 16px; padding: 1.25rem; border: 1px solid #BAE6FD;">
+                    <h4 style="font-weight: 800; color: #0369A1; font-size: 0.95rem; margin-bottom: 0.5rem;">💭 Điều đáng nhớ</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.MemorableMoments</div>
+                </div>
+
+                <!-- 5. 🌱 Điều có thể cải thiện -->
+                <div style="background: #F7FEE7; border-radius: 16px; padding: 1.25rem; border: 1px solid #D9F99D;">
+                    <h4 style="font-weight: 800; color: #3F6212; font-size: 0.95rem; margin-bottom: 0.5rem;">🌱 Điều có thể cải thiện</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.Improvements</div>
+                </div>
+
+                <!-- 6. 🌅 Gợi ý cho ngày mai -->
+                <div style="background: #FFFBEB; border-radius: 16px; padding: 1.25rem; border: 1px solid #FDE68A;">
+                    <h4 style="font-weight: 800; color: #92400E; font-size: 0.95rem; margin-bottom: 0.5rem;">🌅 Gợi ý cho ngày mai</h4>
+                    <div style="font-size: 0.875rem; color: #1F2937; line-height: 1.6; white-space: pre-line;">@Model.TomorrowSuggestions</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 3.5rem; margin-bottom: 1rem;">📖 ✨</div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem;">Chưa có nhật ký cho ngày @selectedDate.ToString("dd/MM/yyyy")</h3>
+                <p style="color: var(--glow-text-muted); max-width: 450px; margin: 0 auto 1.5rem auto;">Hãy bấm nút bên dưới để AI tự động tổng hợp tất cả dữ liệu hoạt động trong ngày thành một bài viết hoàn chỉnh.</p>
+                <form asp-action="GenerateAiDiary" method="post">
+                    <input type="hidden" name="date" value="@selectedDate.ToString("yyyy-MM-dd")" />
+                    <button type="submit" class="btn-glow btn-yellow">🤖 Tạo Nhật ký AI ngay</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <!-- Calendar / History List (4 cols) -->
+    <div class="bento-card col-span-4">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">🗓️</div>
+                <span>Dòng thời gian nhật ký</span>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            @foreach (var h in history)
+            {
+                <a asp-action="Index" asp-route-date="@h.Date.ToString("yyyy-MM-dd")" class="glow-list-item" style="text-decoration: none; @(h.Date.Date == selectedDate.Date ? "border: 2px solid #F59E0B; background: #FEF3C7;" : "")">
+                    <div>
+                        <div style="font-weight: 700; color: #1E293B; font-size: 0.9rem;">@h.Date.ToString("dd/MM/yyyy")</div>
+                        <div style="font-size: 0.75rem; color: var(--glow-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">@h.Title</div>
+                    </div>
+                    <span style="font-size: 1.4rem;">@h.MoodEmoji</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>

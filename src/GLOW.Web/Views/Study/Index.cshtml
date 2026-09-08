@@ -1,0 +1,144 @@
+@{
+    ViewData["Title"] = "Quản lý Học tập";
+    var courses = ViewBag.Courses as List<StudyCourse> ?? new List<StudyCourse>();
+    var tasks = ViewBag.Tasks as List<StudyTask> ?? new List<StudyTask>();
+    var sessions = ViewBag.Sessions as List<StudySession> ?? new List<StudySession>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">📚 GLOW Study</div>
+        <h1>Không gian học tập & Nâng tầm tri thức 🚀</h1>
+        <p>Tổng thời gian học tập 7 ngày qua: <strong>@((int)ViewBag.TotalStudyMinutesWeek / 60) giờ @((int)ViewBag.TotalStudyMinutesWeek % 60) phút</strong>. Kiên trì là chìa khóa của thành công!</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Pomodoro Timer Box -->
+    <div class="bento-card col-span-4" style="text-align: center;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-mint">⏱️</div>
+                <span>Đồng hồ Pomodoro</span>
+            </div>
+            <span class="glow-tag tag-mint">25 min Focus</span>
+        </div>
+
+        <div id="timer-display" style="font-size: 3.5rem; font-weight: 900; color: #065F46; margin: 1.5rem 0; font-variant-numeric: tabular-nums;">
+            25:00
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem;">
+            <button id="timer-start" class="btn-glow btn-mint">▶ Bắt đầu</button>
+            <button id="timer-pause" class="btn-glow btn-yellow">⏸ Tạm dừng</button>
+            <button id="timer-reset" class="btn-glow btn-outline">🔄 Đặt lại</button>
+        </div>
+
+        <form asp-action="LogSession" method="post" style="border-top: 1px solid var(--glow-border); padding-top: 1rem; text-align: left;">
+            <div class="form-group">
+                <label class="form-label">Ghi nhận phiên học vừa xong:</label>
+                <input type="text" name="subject" class="form-control" placeholder="Môn học / Chủ đề (VD: Lập trình C#)" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Thời gian (phút):</label>
+                <input type="number" name="durationMinutes" class="form-control" value="25" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Độ tập trung:</label>
+                <select name="focusQuality" class="form-control">
+                    <option value="Rất tập trung 🔥">Rất tập trung 🔥</option>
+                    <option value="Tuyệt vời 🌟">Tuyệt vời 🌟</option>
+                    <option value="Bình thường ☕">Bình thường ☕</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-glow btn-mint btn-sm" style="width: 100%;">Lưu nhật ký học 📝</button>
+        </form>
+    </div>
+
+    <!-- Task List & Add Form -->
+    <div class="bento-card col-span-8">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-yellow">📝</div>
+                <span>Nhiệm vụ & Bài tập cần làm</span>
+            </div>
+            <button class="btn-glow btn-yellow btn-sm" onclick="document.getElementById('add-task-form').style.display = document.getElementById('add-task-form').style.display === 'none' ? 'block' : 'none';">+ Thêm nhiệm vụ</button>
+        </div>
+
+        <!-- Add Task Form (Toggle) -->
+        <form id="add-task-form" asp-action="AddTask" method="post" style="display: none; background: #F8FAFC; padding: 1rem; border-radius: 16px; margin-bottom: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.75rem;">
+                <input type="text" name="title" class="form-control" placeholder="Tên bài tập / Nhiệm vụ..." required />
+                <select name="courseId" class="form-control">
+                    <option value="">Chọn môn học</option>
+                    @foreach (var c in courses)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+                <input type="date" name="dueDate" class="form-control" />
+            </div>
+            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem;">
+                <input type="number" name="estimatedMinutes" class="form-control" placeholder="Thời gian dự tính (phút)" value="60" style="max-width: 200px;" />
+                <select name="priority" class="form-control" style="max-width: 150px;">
+                    <option value="High">Cao 🔴</option>
+                    <option value="Medium" selected>Vừa 🟡</option>
+                    <option value="Low">Thấp 🟢</option>
+                </select>
+                <button type="submit" class="btn-glow btn-mint btn-sm" style="margin-left: auto;">Lưu bài tập</button>
+            </div>
+        </form>
+
+        <!-- Tasks Table -->
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            @foreach (var t in tasks)
+            {
+                <div class="glow-list-item" style="@(t.IsCompleted ? "opacity: 0.6; text-decoration: line-through;" : "")">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <form asp-action="ToggleTask" method="post" style="margin: 0;">
+                            <input type="hidden" name="id" value="@t.Id" />
+                            <button type="submit" style="background: none; border: none; font-size: 1.25rem; cursor: pointer;">
+                                @(t.IsCompleted ? "✅" : "⭕")
+                            </button>
+                        </form>
+                        <div>
+                            <div style="font-weight: 700; color: var(--glow-text);">@t.Title</div>
+                            <div style="font-size: 0.8rem; color: var(--glow-text-muted);">
+                                @(t.Course?.Name ?? "Tự học") • Deadline: @(t.DueDate?.ToString("dd/MM/yyyy") ?? "Không có")
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="glow-tag @(t.Priority == "High" ? "tag-pink" : "tag-yellow")">@t.Priority</span>
+                        <span class="glow-tag tag-sky">@t.EstimatedMinutes p</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Courses & Schedule -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-lavender">📅</div>
+                <span>Thời khóa biểu & Các môn học</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            @foreach (var c in courses)
+            {
+                <div style="background: @c.ColorHex; padding: 1.25rem; border-radius: 20px; color: #1E293B;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-weight: 800; font-size: 0.85rem; background: rgba(255,255,255,0.7); padding: 0.2rem 0.6rem; border-radius: 999px;">@c.Code</span>
+                        <span style="font-size: 0.85rem; font-weight: 700;">@c.Credits Tín chỉ</span>
+                    </div>
+                    <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem;">@c.Name</h3>
+                    <p style="font-size: 0.85rem; margin-bottom: 0.25rem;">👨‍🏫 Giảng viên: @c.Instructor</p>
+                    <p style="font-size: 0.85rem; margin-bottom: 0.25rem;">📍 Phòng: @c.Room</p>
+                    <p style="font-size: 0.85rem; font-weight: 700;">⏰ Lịch: @c.ScheduleDayOfWeek (@c.TimeSlot)</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

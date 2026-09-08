@@ -1,0 +1,68 @@
+@model GLOW.Services.InsightReport
+@{
+    ViewData["Title"] = "GLOW Insight — Hiểu bản thân";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #E9D5FF 50%, #FEF3C7 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">🧠 GLOW Insight — Điểm Khác Biệt Của GLOW</div>
+        <h1>“Tôi đang hiểu gì về chính mình?” 🔍</h1>
+        <p>AI không chỉ xem từng tính năng riêng lẻ mà phân tích mối tương quan giữa Giấc ngủ ↔ Cảm xúc, Học tập ↔ Năng lượng, Địa điểm ↔ Chi tiêu để giúp bạn thấu hiểu sâu sắc bản thân!</p>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Big Highlight Card (12 cols) -->
+    <div class="bento-card col-span-12" style="background: #FFFFFF; border-left: 6px solid #10B981;">
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+            <div style="font-size: 2.5rem;">💡</div>
+            <div>
+                <h3 style="font-size: 1.25rem; font-weight: 800; color: #065F46; margin-bottom: 0.5rem;">Nhận định tổng quan từ AI</h3>
+                <p style="font-size: 1rem; color: #1E293B; line-height: 1.6;">@Model.MainHighlight</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Correlation Cards -->
+    @foreach (var item in Model.Insights)
+    {
+        <div class="bento-card col-span-6" style="background: #FFFFFF;">
+            <div class="bento-header">
+                <div class="bento-title">
+                    <span style="font-size: 1.4rem;">@item.IconEmoji</span>
+                    <span>@item.Title</span>
+                </div>
+                <span class="glow-tag" style="background: @item.TagColor; color: #1F2937;">@item.Category</span>
+            </div>
+            <p style="font-size: 0.95rem; color: #334155; line-height: 1.6;">@item.Description</p>
+        </div>
+    }
+
+    <!-- Quick Stats Grid (12 cols) -->
+    <div class="bento-card col-span-12" style="background: #F8FAFC;">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-mint">📊</div>
+                <span>Chỉ số cốt lõi tuần qua</span>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="glow-stat-box" style="background: white;">
+                <span class="glow-stat-value" style="color: #7E22CE;">@Model.AverageMood/10</span>
+                <span class="glow-stat-label">😊 Điểm Mood trung bình</span>
+            </div>
+            <div class="glow-stat-box" style="background: white;">
+                <span class="glow-stat-value" style="color: #0284C7;">@Model.AverageSleepHours h</span>
+                <span class="glow-stat-label">😴 Giờ ngủ trung bình</span>
+            </div>
+            <div class="glow-stat-box" style="background: white;">
+                <span class="glow-stat-value" style="color: #059669;">@Model.TotalStudyHoursWeek h</span>
+                <span class="glow-stat-label">📚 Tổng thời gian học tập</span>
+            </div>
+            <div class="glow-stat-box" style="background: white;">
+                <span class="glow-stat-value" style="color: #E11D48;">@Model.TotalExpenseWeek.ToString("N0") đ</span>
+                <span class="glow-stat-label">💰 Tổng chi tiêu tuần</span>
+            </div>
+        </div>
+    </div>
+</div>

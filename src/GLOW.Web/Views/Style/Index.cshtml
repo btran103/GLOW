@@ -1,0 +1,159 @@
+@model List<WardrobeItem>
+@{
+    ViewData["Title"] = "AI Thời trang & Tủ đồ";
+    var advices = ViewBag.RecentAdvices as List<StyleAdvice> ?? new List<StyleAdvice>();
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FDF2F8 0%, #FAF5FF 50%, #ECFDF5 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">👗 GLOW Style — Tủ Đồ & AI Stylist</div>
+        <h1>Phong cách của bạn — Rực rỡ & Tự tin 👠</h1>
+        <p>AI phân tích món đồ bạn muốn mua, đối chiếu với tủ đồ hiện có để tư vấn phối đồ và đưa ra lời khuyên phù hợp nhất!</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <button class="btn-glow btn-lavender" onclick="document.getElementById('advice-modal').style.display = 'block';">✨ Hỏi AI: Món này có hợp không?</button>
+        <button class="btn-glow btn-mint" onclick="document.getElementById('add-wardrobe-modal').style.display = 'block';">+ Thêm đồ vào tủ</button>
+    </div>
+</div>
+
+<!-- Modal Tư Vấn AI Style -->
+<div id="advice-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 500px; margin: 3rem auto; padding: 2rem; border-radius: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Hỏi AI Phối Đồ 👗✨</h2>
+            <button onclick="document.getElementById('advice-modal').style.display = 'none';" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <form asp-action="RequestStyleAdvice" method="post">
+            <div class="form-group">
+                <label class="form-label">Tên món đồ muốn mua / phối:</label>
+                <input type="text" name="itemName" class="form-control" placeholder="VD: Áo Blazer Cropped Mint" required />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Danh mục:</label>
+                    <select name="category" class="form-control">
+                        <option value="Áo">Áo</option>
+                        <option value="Quần">Quần</option>
+                        <option value="Váy">Váy / Đầm</option>
+                        <option value="Áo khoác">Áo khoác</option>
+                        <option value="Giày">Giày</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Màu sắc:</label>
+                    <input type="text" name="color" class="form-control" placeholder="Mint Green" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phong cách:</label>
+                <input type="text" name="style" class="form-control" placeholder="Gen Z Casual, Hàn Quốc" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Link ảnh món đồ:</label>
+                <input type="text" name="imageUrl" class="form-control" placeholder="https://..." />
+            </div>
+            <button type="submit" class="btn-glow btn-lavender" style="width: 100%;">Phân tích & Tư vấn ngay 🔮</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Thêm Đồ Vào Tủ -->
+<div id="add-wardrobe-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 500px; margin: 3rem auto; padding: 2rem; border-radius: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Thêm vào Tủ Đồ 👗</h2>
+            <button onclick="document.getElementById('add-wardrobe-modal').style.display = 'none';" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <form asp-action="AddWardrobeItem" method="post">
+            <div class="form-group">
+                <label class="form-label">Tên trang phục / món đồ:</label>
+                <input type="text" name="name" class="form-control" required />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Danh mục:</label>
+                    <select name="category" class="form-control">
+                        <option value="Áo">Áo</option>
+                        <option value="Quần">Quần</option>
+                        <option value="Váy">Váy / Đầm</option>
+                        <option value="Áo khoác">Áo khoác</option>
+                        <option value="Giày">Giày</option>
+                        <option value="Phụ kiện">Phụ kiện</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Màu sắc:</label>
+                    <input type="text" name="color" class="form-control" placeholder="Trắng kem / Mint" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Link ảnh món đồ:</label>
+                <input type="text" name="imageUrl" class="form-control" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ghi chú:</label>
+                <input type="text" name="notes" class="form-control" placeholder="Chất liệu, dịp mặc phù hợp..." />
+            </div>
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%;">Lưu vào Tủ Đồ ✨</button>
+        </form>
+    </div>
+</div>
+
+<div class="bento-grid">
+    <!-- Advice List (12 cols) -->
+    @if (advices.Any())
+    {
+        <div class="bento-card col-span-12" style="background: #FAF5FF; border: 1px solid #E9D5FF;">
+            <div class="bento-header">
+                <div class="bento-title">
+                    <div class="bento-icon icon-lavender">💡</div>
+                    <span>Lời khuyên AI Stylist gần đây</span>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+                @foreach (var a in advices)
+                {
+                    <div style="background: white; border-radius: 16px; padding: 1.25rem;">
+                        <h4 style="font-weight: 800; color: #581C87; margin-bottom: 0.35rem;">@a.TargetItemName (@a.DetectedColor)</h4>
+                        <p style="font-size: 0.85rem; color: #334155; margin-bottom: 0.5rem;">@a.MatchAnalysis</p>
+                        <div style="background: #F0FDF4; padding: 0.5rem; border-radius: 8px; font-size: 0.8rem; color: #065F46; margin-bottom: 0.5rem;">
+                            ✨ @a.SuggestedCombinations
+                        </div>
+                        <div style="font-size: 0.8rem; font-weight: 700; color: #B45309;">
+                            🛒 @a.BuyingRecommendation
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Wardrobe Items (12 cols) -->
+    <div class="bento-card col-span-12">
+        <div class="bento-header">
+            <div class="bento-title">
+                <div class="bento-icon icon-mint">👚</div>
+                <span>Tủ đồ của tôi (My Wardrobe)</span>
+            </div>
+            <span class="glow-tag tag-mint">@Model.Count món đồ</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+            @foreach (var item in Model)
+            {
+                <div style="background: #F8FAFC; border-radius: 16px; overflow: hidden; border: 1px solid var(--glow-border);">
+                    <div style="height: 180px; width: 100%;">
+                        <img src="@item.ImageUrl" alt="@item.Name" style="width: 100%; height: 100%; object-fit: cover;" />
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+                            <span class="glow-tag tag-lavender">@item.Category</span>
+                            <span style="font-size: 0.75rem; color: var(--glow-text-muted);">Đã mặc @item.UsageCount lần</span>
+                        </div>
+                        <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.25rem;">@item.Name</h4>
+                        <p style="font-size: 0.8rem; color: var(--glow-text-muted);">🎨 @item.Color • @item.Style</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+# .NET Core
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Database & Uploads
+*.db
+*.db-shm
+*.db-wal
+glow_app.db
+wwwroot/uploads/avatars/*
+!wwwroot/uploads/avatars/.keep
+
+# Secrets / AppSettings
+appsettings.Development.json
+appsettings.*.json
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
+
+# Visual Studio
+.vs/

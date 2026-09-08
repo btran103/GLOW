@@ -1,0 +1,72 @@
+@model List<NutritionEntry>
+@{
+    ViewData["Title"] = "Nhật ký Ăn uống";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #FEF3C7 0%, #D9F99D 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">🍎 GLOW Nutrition</div>
+        <h1>Ăn uống cân bằng & Lắng nghe cơ thể 🥗</h1>
+        <p>Ước tính calo và dinh dưỡng tham khảo, giúp bạn nuôi dưỡng cơ thể tràn đầy sức sống và yêu thương bản thân!</p>
+    </div>
+    <button class="btn-glow btn-mint" onclick="document.getElementById('add-meal-modal').style.display = 'block';">+ Thêm bữa ăn</button>
+</div>
+
+<!-- Modal Thêm Bữa Ăn -->
+<div id="add-meal-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 500px; margin: 4rem auto; padding: 2rem; border-radius: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Ghi lại món ăn ngon 🍜</h2>
+            <button onclick="document.getElementById('add-meal-modal').style.display = 'none';" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <form asp-action="AddEntry" method="post">
+            <div class="form-group">
+                <label class="form-label">Bữa ăn:</label>
+                <select name="mealType" class="form-control">
+                    <option value="Sáng">Sáng 🍳</option>
+                    <option value="Trưa" selected>Trưa 🍱</option>
+                    <option value="Tối">Tối 🍲</option>
+                    <option value="Ăn vặt">Ăn vặt / Tráng miệng 🧋</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tên món ăn:</label>
+                <input type="text" name="dishName" class="form-control" placeholder="VD: Cơm tấm sườn nướng" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Ước tính Calo (kcal):</label>
+                <input type="number" name="estimatedCalories" class="form-control" value="450" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Link ảnh món ăn (hoặc để trống):</label>
+                <input type="text" name="imageUrl" class="form-control" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Cảm giác sau khi ăn:</label>
+                <input type="text" name="feelingAfterMeal" class="form-control" placeholder="VD: No vừa phải, dễ chịu" />
+            </div>
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%;">Lưu bữa ăn 🥗</button>
+        </form>
+    </div>
+</div>
+
+<div class="bento-grid">
+    @foreach (var meal in Model)
+    {
+        <div class="bento-card col-span-4">
+            <div style="height: 180px; border-radius: 16px; overflow: hidden; margin-bottom: 1rem;">
+                <img src="@meal.ImageUrl" alt="@meal.DishName" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span class="glow-tag tag-yellow">@meal.MealType</span>
+                <span style="font-size: 0.8rem; color: var(--glow-text-muted);">@meal.Time.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.4rem;">@meal.DishName</h3>
+            <div class="glow-stat-value" style="font-size: 1.25rem; color: #D97706; margin-bottom: 0.5rem;">~@meal.EstimatedCalories kcal</div>
+            <p style="font-size: 0.8rem; color: var(--glow-text-muted); margin-bottom: 0.5rem;">@meal.NutrientsSummary</p>
+            <div style="background: #F8FAFC; padding: 0.75rem; border-radius: 12px; font-size: 0.8rem; color: #065F46; margin-top: auto;">
+                💡 <strong>AI nhận xét:</strong> @meal.AiNutritionAdvice
+            </div>
+        </div>
+    }
+</div>

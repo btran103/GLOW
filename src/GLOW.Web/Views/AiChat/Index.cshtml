@@ -1,0 +1,67 @@
+@model List<AiChatMessage>
+@{
+    ViewData["Title"] = "GLOW AI — Người bạn đồng hành";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #E9D5FF 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">🤖 GLOW AI Companion</div>
+        <h1>Người bạn số thấu cảm & Lắng nghe bạn 24/7 💬</h1>
+        <p>AI kết nối thông tin học tập, sức khỏe, cảm xúc để trò chuyện và đưa ra lời khuyên cá nhân hóa cho bạn!</p>
+    </div>
+    <form asp-action="ClearChat" method="post" style="margin: 0;">
+        <button type="submit" class="btn-glow btn-outline btn-sm">🗑️ Xóa lịch sử chat</button>
+    </form>
+</div>
+
+<!-- Chat Interface -->
+<div class="chat-container">
+    <div class="chat-messages" id="chat-messages-box">
+        @foreach (var msg in Model)
+        {
+            <div class="chat-bubble @(msg.Sender == "User" ? "user" : "assistant")">
+                <div style="font-size: 0.75rem; margin-bottom: 0.25rem; opacity: 0.7;">
+                    @(msg.Sender == "User" ? "Bạn" : "GLOW AI ✨") • @msg.Timestamp.ToString("HH:mm")
+                </div>
+                <div>@msg.Message</div>
+                @if (!string.IsNullOrEmpty(msg.ContextReferenced))
+                {
+                    <div style="font-size: 0.7rem; margin-top: 0.4rem; color: #059669; font-weight: 700;">
+                        🔍 Đã tham chiếu dữ liệu: @msg.ContextReferenced
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Chat Prompt suggestions -->
+    <div style="padding: 0.5rem 1.5rem; background: #F8FAFC; display: flex; gap: 0.5rem; overflow-x: auto; border-top: 1px solid var(--glow-border);">
+        <button class="btn-glow btn-outline btn-sm" onclick="fillPrompt('Hôm nay tui thấy hơi mệt, tại sao vậy AI?')">🥱 Tại sao tui mệt?</button>
+        <button class="btn-glow btn-outline btn-sm" onclick="fillPrompt('Hôm nay tui đã học được bao lâu rồi?')">📚 Hôm nay học bao lâu?</button>
+        <button class="btn-glow btn-outline btn-sm" onclick="fillPrompt('Ngày mai tui nên ưu tiên việc gì?')">🌅 Ngày mai ưu tiên gì?</button>
+        <button class="btn-glow btn-outline btn-sm" onclick="fillPrompt('Gợi ý cho tui một outfit may mắn ngày mai nhé!')">👗 Gợi ý outfit may mắn</button>
+    </div>
+
+    <!-- Input Box -->
+    <form asp-action="SendMessage" method="post" style="display: flex; gap: 0.75rem; padding: 1rem 1.5rem; background: white; border-top: 1px solid var(--glow-border);">
+        <input type="text" name="userMessage" id="user-input" class="form-control" placeholder="Tâm sự hoặc hỏi AI bất cứ điều gì..." autocomplete="off" required />
+        <button type="submit" class="btn-glow btn-mint" style="padding: 0.75rem 1.5rem;">Gửi 🚀</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function fillPrompt(text) {
+            const input = document.getElementById('user-input');
+            input.value = text;
+            input.focus();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const box = document.getElementById('chat-messages-box');
+            if (box) {
+                box.scrollTop = box.scrollHeight;
+            }
+        });
+    </script>
+}

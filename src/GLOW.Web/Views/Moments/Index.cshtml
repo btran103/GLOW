@@ -1,0 +1,110 @@
+@model List<MomentItem>
+@{
+    ViewData["Title"] = "Kỷ niệm & Khoảnh khắc";
+}
+
+<div class="glow-hero-banner" style="background: linear-gradient(135deg, #ECFDF5 0%, #FEF3C7 100%);">
+    <div class="glow-hero-content">
+        <div class="glow-hero-badge">📸 GLOW Moments</div>
+        <h1>Lưu giữ những khoảnh khắc thanh xuân rạng ngời ✨</h1>
+        <p>Mỗi bức ảnh là một câu chuyện, một cảm xúc và một phần hành trình trưởng thành của bạn!</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+        <button class="btn-glow btn-mint" onclick="openCameraModal()">📷 Chụp ảnh bằng Camera</button>
+        <button class="btn-glow btn-yellow" onclick="document.getElementById('add-moment-modal').style.display = 'block';">+ Upload ảnh</button>
+    </div>
+</div>
+
+<!-- Modal Camera Trực Tiếp -->
+<div id="camera-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 500px; margin: 3rem auto; padding: 1.5rem; border-radius: 24px; text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-weight: 800;">Chụp ảnh từ Camera 📸</h3>
+            <button onclick="closeCameraModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <video id="webcam-video" autoplay playsinline style="width: 100%; height: 280px; background: #000; border-radius: 16px; object-fit: cover;"></video>
+        <canvas id="snapshot-canvas" style="display: none;"></canvas>
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <button class="btn-glow btn-mint" onclick="captureAndFill()">📸 Bấm chụp ngay</button>
+            <button class="btn-glow btn-outline" onclick="closeCameraModal()">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm Kỷ Niệm -->
+<div id="add-moment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(4px);">
+    <div style="background: white; max-width: 520px; margin: 3rem auto; padding: 2rem; border-radius: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Lưu giữ khoảnh khắc 🌟</h2>
+            <button onclick="document.getElementById('add-moment-modal').style.display = 'none';" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+        </div>
+        <form asp-action="AddMoment" method="post">
+            <div class="form-group">
+                <label class="form-label">Tiêu đề:</label>
+                <input type="text" name="title" class="form-control" placeholder="VD: Buổi chiều chill bên quán cafe" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Caption / Lời nhắn:</label>
+                <textarea name="caption" class="form-control" placeholder="Cảm nghĩ của bạn về khoảnh khắc này..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Link ảnh (hoặc ảnh chụp camera):</label>
+                <input type="text" name="imageUrl" id="moment-image-url" class="form-control" placeholder="https://..." />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Địa điểm:</label>
+                    <input type="text" name="locationName" class="form-control" placeholder="Quán cafe / Công viên..." />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cảm xúc tag:</label>
+                    <input type="text" name="moodTag" class="form-control" placeholder="✨ Hạnh phúc & Bình yên" />
+                </div>
+            </div>
+            <button type="submit" class="btn-glow btn-mint" style="width: 100%;">Lưu kỷ niệm ✨</button>
+        </form>
+    </div>
+</div>
+
+<!-- Moments Masonry / Grid -->
+<div class="bento-grid">
+    @foreach (var m in Model)
+    {
+        <div class="bento-card col-span-4" style="padding: 0; overflow: hidden;">
+            <div style="height: 240px; width: 100%; position: relative;">
+                <img src="@m.ImageUrl" alt="@m.Title" style="width: 100%; height: 100%; object-fit: cover;" />
+                <div style="position: absolute; top: 12px; right: 12px;">
+                    <span class="glow-tag tag-pink">@m.MoodTag</span>
+                </div>
+            </div>
+            <div style="padding: 1.25rem;">
+                <div style="font-size: 0.8rem; color: var(--glow-text-muted); margin-bottom: 0.35rem;">
+                    📍 @m.LocationName • @m.Timestamp.ToString("dd/MM/yyyy HH:mm")
+                </div>
+                <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--glow-text);">@m.Title</h3>
+                <p style="font-size: 0.875rem; color: #475569; line-height: 1.5; margin-bottom: 0.75rem;">@m.Caption</p>
+                <span class="glow-tag tag-sky">@m.Tags</span>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function openCameraModal() {
+            document.getElementById('camera-modal').style.display = 'block';
+            startCamera('webcam-video');
+        }
+
+        function closeCameraModal() {
+            document.getElementById('camera-modal').style.display = 'none';
+            stopCamera();
+        }
+
+        function captureAndFill() {
+            captureSnapshot('webcam-video', 'snapshot-canvas', 'moment-image-url');
+            closeCameraModal();
+            document.getElementById('add-moment-modal').style.display = 'block';
+        }
+    </script>
+}
